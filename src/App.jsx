@@ -17,6 +17,45 @@ import MiniHomepy from './components/profile/MiniHomepy';
 import MoreTab from './components/home/MoreTab';
 import CraftTab from './components/craft/CraftTab';
 
+function AvatarEditorModal({ onClose }) {
+  return (
+    <div style={{
+      position: 'fixed', inset: 0, zIndex: 1000,
+      background: 'rgba(0,0,0,0.7)',
+      display: 'flex', flexDirection: 'column',
+      backdropFilter: 'blur(4px)',
+    }}>
+      {/* 헤더 */}
+      <div style={{
+        display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+        padding: '12px 16px',
+        background: 'var(--bg-card)',
+        borderBottom: '1px solid var(--border)',
+        flexShrink: 0,
+      }}>
+        <span style={{ fontWeight: 700, fontSize: 16, color: 'var(--text-main)', fontFamily: 'var(--font-main)' }}>
+          🎨 도트 아바타 에디터
+        </span>
+        <button
+          onClick={onClose}
+          style={{
+            width: 36, height: 36, borderRadius: '50%',
+            border: '1px solid var(--border)',
+            background: 'var(--bg-surface)',
+            fontSize: 18, cursor: 'pointer',
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            color: 'var(--text-dim)',
+          }}
+        >✕</button>
+      </div>
+      {/* 스크롤 가능한 에디터 영역 */}
+      <div style={{ flex: 1, overflowY: 'auto', padding: '12px 16px', background: 'var(--bg-main)' }}>
+        <AvatarEditor onClose={onClose} />
+      </div>
+    </div>
+  );
+}
+
 function MainContent() {
   const { state } = useApp();
 
@@ -25,7 +64,6 @@ function MainContent() {
     case 'room': return <MyRoom />;
     case 'garden': return <MyGarden />;
     case 'craft': return <CraftTab />;
-    case 'avatar': return <AvatarEditor />;
     case 'market': return <Market />;
     case 'social': return <SocialTab />;
     case 'wave': return <WaveSurf />;
@@ -90,6 +128,10 @@ export default function App() {
     );
   }
 
+  const handleCloseAvatarEditor = () => {
+    dispatch({ type: 'SET_TAB', tab: 'home' });
+  };
+
   return (
     <div className="app-shell">
       <TopBar />
@@ -99,6 +141,9 @@ export default function App() {
       </div>
       <BottomNav />
       <ToastContainer />
+      {state.currentTab === 'avatar' && (
+        <AvatarEditorModal onClose={handleCloseAvatarEditor} />
+      )}
     </div>
   );
 }

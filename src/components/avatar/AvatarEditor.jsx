@@ -64,7 +64,7 @@ export function loadDefaultAvatar() {
   return imageToPixels('/기본아바타.png', GRID_W, GRID_H);
 }
 
-export default function AvatarEditor() {
+export default function AvatarEditor({ onClose }) {
   const { state, dispatch, showToast } = useApp();
   const [pixels, setPixels] = useState(() => {
     if (state.avatar.pixels && state.avatar.pixels.some(row => row.some(c => c))) {
@@ -166,7 +166,8 @@ export default function AvatarEditor() {
   const saveAvatar = useCallback(() => {
     dispatch({ type: 'SET_AVATAR', avatar: { pixels, bubbleText } });
     showToast('아바타 저장 완료! 🎨');
-  }, [pixels, bubbleText, dispatch, showToast]);
+    if (onClose) onClose();
+  }, [pixels, bubbleText, dispatch, showToast, onClose]);
 
   // 좌우 반전
   const flipH = useCallback(() => {
