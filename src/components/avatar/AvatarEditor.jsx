@@ -236,42 +236,6 @@ export default function AvatarEditor({ onClose }) {
         </div>
         </div>{/* 스크롤 컨테이너 */}
 
-        {/* 프리뷰 */}
-        <div style={{ marginTop: 10, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 12 }}>
-          <span style={{ fontSize: 11, color: 'var(--text-dim)' }}>미리보기:</span>
-          <canvas
-            ref={el => {
-              if (!el) return;
-              const ctx = el.getContext('2d');
-              ctx.clearRect(0, 0, GRID_W, GRID_H);
-              pixels.forEach((row, r) =>
-                row.forEach((cell, c) => {
-                  if (!cell) return;
-                  ctx.fillStyle = cell;
-                  ctx.fillRect(c, r, 1, 1);
-                })
-              );
-            }}
-            width={GRID_W} height={GRID_H}
-            style={{ width: 48, height: 64, imageRendering: 'pixelated', border: '1px solid var(--border-light)', borderRadius: 4 }}
-          />
-          <canvas
-            ref={el => {
-              if (!el) return;
-              const ctx = el.getContext('2d');
-              ctx.clearRect(0, 0, GRID_W, GRID_H);
-              pixels.forEach((row, r) =>
-                row.forEach((cell, c) => {
-                  if (!cell) return;
-                  ctx.fillStyle = cell;
-                  ctx.fillRect(c, r, 1, 1);
-                })
-              );
-            }}
-            width={GRID_W} height={GRID_H}
-            style={{ width: 96, height: 128, imageRendering: 'pixelated', border: '1px solid var(--border-light)', borderRadius: 4 }}
-          />
-        </div>
       </div>
 
       {/* 도구 */}
