@@ -90,6 +90,23 @@ export default function AvatarEditor({ onClose }) {
   const [history, setHistory] = useState([]);
   const [bubbleText, setBubbleText] = useState(state.avatar.bubbleText || '');
   const [editorZoom, setEditorZoom] = useState(1);
+  const [myColors, setMyColors] = useState(() => {
+    try { return JSON.parse(localStorage.getItem('dotori_my_colors') || '[]'); } catch { return []; }
+  });
+
+  const addMyColor = useCallback(() => {
+    if (!color || myColors.includes(color)) return;
+    const next = [...myColors, color].slice(-16); // 최대 16개
+    setMyColors(next);
+    localStorage.setItem('dotori_my_colors', JSON.stringify(next));
+    showToast('색상 저장!');
+  }, [color, myColors, showToast]);
+
+  const removeMyColor = useCallback((c) => {
+    const next = myColors.filter(x => x !== c);
+    setMyColors(next);
+    localStorage.setItem('dotori_my_colors', JSON.stringify(next));
+  }, [myColors]);
 
   // 히스토리 저장
   const saveHistory = useCallback(() => {
@@ -265,6 +282,15 @@ export default function AvatarEditor({ onClose }) {
             border: '2px solid var(--border)',
           }} />
           <span style={{ fontSize: 11, color: 'var(--text-dim)' }}>현재 색상</span>
+          <button
+            onClick={addMyColor}
+            title="내 팔레트에 저장"
+            style={{
+              padding: '3px 8px', fontSize: 11, borderRadius: 6, cursor: 'pointer',
+              border: '1px solid var(--border)', background: 'var(--bg-surface)',
+              color: 'var(--text-dim)',
+            }}
+          >+ 저장</button>
           <div style={{ marginLeft: 'auto', display: 'flex', gap: 4 }}>
             <label style={{
               display: 'flex', alignItems: 'center', gap: 4,
@@ -275,6 +301,34 @@ export default function AvatarEditor({ onClose }) {
             </label>
           </div>
         </div>
+
+        {/* 내 팔레트 */}
+        {myColors.length > 0 && (
+          <div style={{ marginBottom: 8 }}>
+            <div style={{ fontSize: 10, color: 'var(--text-dim)', marginBottom: 4 }}>내 팔레트 (길게 눌러 삭제)</div>
+            <div style={{ display: 'flex', flexWrap: 'wrap', gap: 4 }}>
+              {myColors.map((c, i) => (
+                <div
+                  key={i}
+                  onClick={() => { setColor(c); if (tool === 'eraser') setTool('pen'); }}
+                  onContextMenu={e => { e.preventDefault(); removeMyColor(c); }}
+                  onPointerDown={e => {
+                    const t = setTimeout(() => removeMyColor(c), 600);
+                    e.currentTarget._longPress = t;
+                  }}
+                  onPointerUp={e => clearTimeout(e.currentTarget._longPress)}
+                  onPointerLeave={e => clearTimeout(e.currentTarget._longPress)}
+                  style={{
+                    width: 24, height: 24, borderRadius: 4, cursor: 'pointer',
+                    background: c,
+                    border: `2px solid ${color === c ? 'var(--primary)' : 'var(--border-light)'}`,
+                    boxShadow: color === c ? '0 0 0 2px var(--primary-soft)' : 'none',
+                  }}
+                />
+              ))}
+            </div>
+          </div>
+        )}
 
         {/* 팔레트 */}
         <div style={{ display: 'flex', flexWrap: 'wrap', gap: 4 }}>
